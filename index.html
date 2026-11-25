@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Guildbound</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">✦</span> Guildbound <small>a party-building card game</small></div>
+    <div class="top-actions">
+      <label class="speed">Speed
+        <select id="speed">
+          <option value="1.6">Slow</option>
+          <option value="1" selected>Normal</option>
+          <option value="0.5">Fast</option>
+          <option value="0.15">Turbo</option>
+        </select>
+      </label>
+      <button id="btn-rules" class="ghost">Rules</button>
+      <button id="btn-new" class="ghost">New game</button>
+    </div>
+  </header>
+
+  <main id="table" hidden>
+    <section id="opponents"></section>
+
+    <section id="middle">
+      <div class="monster-zone">
+        <h3>Monsters</h3>
+        <div id="monsters" class="row"></div>
+      </div>
+      <div class="pile-zone">
+        <div class="pile" id="deck-pile"><div class="card back"><span>✦</span></div><small id="deck-count"></small></div>
+        <div class="pile" id="discard-pile"><div id="discard-top"></div><small id="discard-count"></small></div>
+        <div id="pending"></div>
+      </div>
+      <div class="log-zone">
+        <h3>Chronicle</h3>
+        <ol id="log"></ol>
+      </div>
+    </section>
+
+    <section id="me">
+      <div class="me-head">
+        <div id="me-info"></div>
+        <div class="controls">
+          <div id="ap" title="Action points"></div>
+          <button id="btn-draw">Draw <em>1 AP</em></button>
+          <button id="btn-redraw">New hand <em>3 AP</em></button>
+          <button id="btn-end" class="primary">End turn</button>
+        </div>
+      </div>
+      <div class="party-wrap">
+        <div id="me-leader"></div>
+        <div id="me-party" class="row"></div>
+      </div>
+      <div id="hint"></div>
+      <div id="hand" class="row hand"></div>
+    </section>
+  </main>
+
+  <div id="setup" class="overlay">
+    <div class="panel setup-panel">
+      <h1><span class="brand-mark">✦</span> Guildbound</h1>
+      <p class="lede">Recruit a party of heroes, roll the dice to unleash their talents, and outwit rival guilds.
+        Slay <b>3 monsters</b> or gather <b>all 6 classes</b> to win.</p>
+      <label>Your name <input id="setup-name" value="You" maxlength="16"></label>
+      <label>Opponents
+        <select id="setup-opps">
+          <option value="1">1 rival</option>
+          <option value="2" selected>2 rivals</option>
+          <option value="3">3 rivals</option>
+        </select>
+      </label>
+      <label>Modifier prompts
+        <select id="setup-mods">
+          <option value="smart" selected>Only when a modifier could change the result</option>
+          <option value="always">On every roll</option>
+          <option value="never">Never (I'll keep my modifiers)</option>
+        </select>
+      </label>
+      <div class="setup-actions">
+        <button id="btn-start" class="primary big">Begin the adventure</button>
+        <button id="btn-rules2" class="ghost">How to play</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modal" class="overlay" hidden>
+    <div class="panel modal-panel">
+      <h2 id="modal-title"></h2>
+      <div id="modal-body"></div>
+      <div id="modal-actions"></div>
+    </div>
+  </div>
+
+  <div id="roll" hidden>
+    <div class="roll-label" id="roll-label"></div>
+    <div class="roll-dice"><div class="die" id="die1"></div><div class="die" id="die2"></div></div>
+    <div class="roll-math" id="roll-math"></div>
+    <div class="roll-result" id="roll-result"></div>
+  </div>
+
+  <div id="banner" hidden></div>
+
+  <template id="rules-tpl">
+    <div class="rules">
+      <h4>Goal</h4>
+      <p>Be the first to <b>slay 3 monsters</b> <i>or</i> have <b>6 different classes</b> in your party
+        (your Party Leader counts as one). Classes: ⚔ Blade, ✦ Arcanist, ☾ Shade, ⛨ Warden, ⚙ Tinker, ❦ Druid.</p>
+      <h4>Your turn</h4>
+      <p>You get <b>3 action points (AP)</b>. Spend them on:</p>
+      <ul>
+        <li><b>Draw a card</b> — 1 AP</li>
+        <li><b>Play a card</b> (Hero, Item or Magic) — 1 AP. A newly played hero immediately gets a free ability roll.</li>
+        <li><b>Use a hero's ability</b> — 1 AP. Roll 2d6; meet the hero's number to trigger it. Each hero once per turn.</li>
+        <li><b>Attack a monster</b> — 2 AP. You must meet its party requirement. Roll its number to slay it and gain its power.
+          Roll at or under its fail number and it strikes back.</li>
+        <li><b>New hand</b> — 3 AP: discard your hand and draw 5.</li>
+      </ul>
+      <p>At the end of your turn you discard down to 7 cards.</p>
+      <h4>Cards</h4>
+      <ul>
+        <li><b>Heroes</b> join your party. Click a hero in your party to roll for its ability.</li>
+        <li><b>Items</b> attach to any hero (one each). Cursed items are meant for your rivals' heroes. Sigils change a hero's class.</li>
+        <li><b>Magic</b> is a one-shot effect.</li>
+        <li><b>Modifiers</b> can be played by anyone on any roll to push the total up or down.</li>
+        <li><b>Objection!</b> lets you challenge a Hero, Item or Magic card another player plays: roll 7+ to cancel it.</li>
+      </ul>
+      <h4>Leaders</h4>
+      <p>Each player starts with a random Party Leader who has a class and a special power.</p>
+    </div>
+  </template>
+
+  <script src="js/cards.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/ai.js"></script>
+  <script src="js/ui.js"></script>
+</body>
+</html>
