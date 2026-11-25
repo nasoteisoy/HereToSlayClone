@@ -8,7 +8,6 @@ You play against 1–3 AI rival guilds.
 
 Play online at https://nasoteisoy.github.io/HereToSlayClone/ (GitHub Pages, deployed from this branch).
 
-
 Open `index.html` in any modern browser. You don't need a build step or a server.
 
 ## How to win
